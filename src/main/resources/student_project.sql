@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS jc_register_office;
 DROP TABLE IF EXISTS jc_country_struct;
 DROP TABLE IF EXISTS jc_university;
 DROP TABLE IF EXISTS jc_street;
+DROP TABLE IF EXISTS jc_student_order_tmp;
 
 CREATE TABLE jc_street
 (
@@ -120,3 +121,18 @@ CREATE INDEX idx_student_order_status ON jc_student_order(student_order_status);
 
 CREATE INDEX idx_student_order_id ON jc_student_child(student_order_id);
 
+
+
+CREATE TABLE jc_student_order_tmp
+(
+    student_order_id SERIAL,
+    h_sur_name varchar(100) not null,
+    h_given_name varchar(100) not null,
+    h_patronymic varchar(100) not null,
+    h_date_of_birth date not null,
+    w_sur_name varchar(100) not null,
+    w_given_name varchar(100) not null,
+    w_patronymic varchar(100) not null,
+    w_date_of_birth date not null,
+    PRIMARY KEY (student_order_id)
+);
