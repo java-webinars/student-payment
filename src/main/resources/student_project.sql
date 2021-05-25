@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS jc_register_office;
 DROP TABLE IF EXISTS jc_country_struct;
 DROP TABLE IF EXISTS jc_university;
 DROP TABLE IF EXISTS jc_street;
+DROP TABLE IF EXISTS jc_order_status;
 
 CREATE TABLE jc_street
 (
@@ -45,11 +46,17 @@ CREATE TABLE jc_register_office
     FOREIGN KEY (r_office_area_id) REFERENCES jc_country_struct(area_id) ON DELETE RESTRICT
 );
 
+CREATE TABLE jc_order_status
+(
+    status_id integer not null,
+    status_name varchar(20),
+    PRIMARY KEY (status_id)
+);
 
 CREATE TABLE jc_student_order
 (
     student_order_id SERIAL,
-    student_order_status int not null,
+    student_order_status_id int not null,
     student_order_date timestamp not null,
     h_sur_name varchar(100) not null,
     h_given_name varchar(100) not null,
@@ -81,10 +88,11 @@ CREATE TABLE jc_student_order
     w_apartment varchar(10),
     w_university_id integer not null,
     w_student_number varchar(30) not null,
-    certificate_id varchar(20) not null,
+    certificate_number varchar(20) not null,
     register_office_id integer not null,
     marriage_date date not null,
     PRIMARY KEY (student_order_id),
+    FOREIGN KEY (student_order_status_id) REFERENCES jc_order_status(status_id) ON DELETE RESTRICT,
     FOREIGN KEY (h_street_code) REFERENCES jc_street(street_code) ON DELETE RESTRICT,
     FOREIGN KEY (h_passport_office_id) REFERENCES jc_passport_office(p_office_id) ON DELETE RESTRICT,
     FOREIGN KEY (h_university_id) REFERENCES jc_university(university_id) ON DELETE RESTRICT,
@@ -116,42 +124,6 @@ CREATE TABLE jc_student_child
     FOREIGN KEY (c_register_office_id) REFERENCES jc_register_office(r_office_id) ON DELETE RESTRICT
 );
 
-CREATE INDEX idx_student_order_status ON jc_student_order(student_order_status);
+CREATE INDEX idx_student_order_status_id ON jc_student_order(student_order_status_id);
 
 CREATE INDEX idx_student_order_id ON jc_student_child(student_order_id);
-
-
-
-DROP TABLE IF EXISTS jc_student_order_tmp;
-
-CREATE TABLE jc_student_order_tmp
-(
-    student_order_id SERIAL,
-    h_sur_name varchar(100) not null,
-    h_given_name varchar(100) not null,
-    h_patronymic varchar(100) not null,
-    h_date_of_birth date not null,
-    h_passport_seria varchar(10) not null,
-    h_passport_number varchar(10) not null,
-    h_passport_date date not null,
-    h_post_index varchar(10),
-    h_street_code integer not null,
-    h_building varchar(10) not null,
-    h_extension varchar(10),
-    h_apartment varchar(10),
-    w_sur_name varchar(100) not null,
-    w_given_name varchar(100) not null,
-    w_patronymic varchar(100) not null,
-    w_date_of_birth date not null,
-    w_passport_seria varchar(10) not null,
-    w_passport_number varchar(10) not null,
-    w_passport_date date not null,
-    w_post_index varchar(10),
-    w_street_code integer not null,
-    w_building varchar(10) not null,
-    w_extension varchar(10),
-    w_apartment varchar(10),
-    PRIMARY KEY (student_order_id),
-    FOREIGN KEY (h_street_code) REFERENCES jc_street(street_code) ON DELETE RESTRICT,
-    FOREIGN KEY (w_street_code) REFERENCES jc_street(street_code) ON DELETE RESTRICT
-);
