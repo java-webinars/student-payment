@@ -3,6 +3,7 @@ package edu.javacourse.student.business;
 import edu.javacourse.student.dao.PassportOfficeRepository;
 import edu.javacourse.student.dao.RegisterOfficeRepository;
 import edu.javacourse.student.dao.StreetRepository;
+import edu.javacourse.student.dao.StudentOrderChildRepository;
 import edu.javacourse.student.dao.StudentOrderRepository;
 import edu.javacourse.student.dao.StudentOrderStatusRepository;
 import edu.javacourse.student.dao.UniversityRepository;
@@ -11,6 +12,7 @@ import edu.javacourse.student.domain.Adult;
 import edu.javacourse.student.domain.Person;
 import edu.javacourse.student.domain.Street;
 import edu.javacourse.student.domain.StudentOrder;
+import edu.javacourse.student.domain.StudentOrderChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ public class StudentOrderService
 
     @Autowired
     private StudentOrderRepository dao;
+    @Autowired
+    private StudentOrderChildRepository daoChild;
     @Autowired
     private StreetRepository daoStreet;
     @Autowired
@@ -53,12 +57,16 @@ public class StudentOrderService
         so.setMarriageDate(LocalDate.now());
 
         dao.save(so);
+
+        StudentOrderChild soc = buildChild(so);
+        daoChild.save(soc);
     }
 
     @Transactional
     public void testGet() {
         List<StudentOrder> sos = dao.findAll();
         LOG.info(sos.get(0).getWife().getGivenName());
+        LOG.info(sos.get(0).getChildren().get(0).getGivenName());
     }
 
     private Adult buildPerson(boolean wife) {
@@ -93,6 +101,32 @@ public class StudentOrderService
             p.setStudentNumber("67890");
             p.setUniversity(daoUniversity.getOne(1L));
         }
+        return p;
+    }
+
+    private StudentOrderChild buildChild(StudentOrder so) {
+        StudentOrderChild p = new StudentOrderChild();
+
+        p.setStudentOrder(so);
+        
+        p.setDateOfBirth(LocalDate.now());
+        Address a = new Address();
+        a.setPostCode("190000");
+        a.setBuilding("21");
+        a.setExtension("B");
+        a.setApartment("199");
+        Street one = daoStreet.getOne(1L);
+        a.setStreet(one);
+        p.setAddress(a);
+
+        p.setSurName("Рюрик");
+        p.setGivenName("Дмитрий");
+        p.setPatronymic("Иванович");
+
+        p.setCertificateDate(LocalDate.now());
+        p.setCertificateNumber("BIRTH N");
+        p.setRegisterOffice(daoRegister.getOne(1L));
+
         return p;
     }
 }
