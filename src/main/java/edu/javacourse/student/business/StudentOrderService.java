@@ -9,6 +9,7 @@ import edu.javacourse.student.dao.StudentOrderStatusRepository;
 import edu.javacourse.student.dao.UniversityRepository;
 import edu.javacourse.student.domain.Address;
 import edu.javacourse.student.domain.Adult;
+import edu.javacourse.student.domain.Child;
 import edu.javacourse.student.domain.Person;
 import edu.javacourse.student.domain.Street;
 import edu.javacourse.student.domain.StudentOrder;
@@ -66,7 +67,7 @@ public class StudentOrderService
     public void testGet() {
         List<StudentOrder> sos = dao.findAll();
         LOG.info(sos.get(0).getWife().getGivenName());
-        LOG.info(sos.get(0).getChildren().get(0).getGivenName());
+        LOG.info(sos.get(0).getChildren().get(0).getChild().getGivenName());
     }
 
     private Adult buildPerson(boolean wife) {
@@ -106,10 +107,18 @@ public class StudentOrderService
 
     private StudentOrderChild buildChild(StudentOrder so) {
         StudentOrderChild p = new StudentOrderChild();
-
         p.setStudentOrder(so);
-        
-        p.setDateOfBirth(LocalDate.now());
+
+        Child c = new Child();
+        c.setDateOfBirth(LocalDate.now());
+        c.setSurName("Рюрик");
+        c.setGivenName("Дмитрий");
+        c.setPatronymic("Иванович");
+
+        c.setCertificateDate(LocalDate.now());
+        c.setCertificateNumber("BIRTH N");
+        c.setRegisterOffice(daoRegister.getOne(1L));
+
         Address a = new Address();
         a.setPostCode("190000");
         a.setBuilding("21");
@@ -117,15 +126,9 @@ public class StudentOrderService
         a.setApartment("199");
         Street one = daoStreet.getOne(1L);
         a.setStreet(one);
-        p.setAddress(a);
+        c.setAddress(a);
 
-        p.setSurName("Рюрик");
-        p.setGivenName("Дмитрий");
-        p.setPatronymic("Иванович");
-
-        p.setCertificateDate(LocalDate.now());
-        p.setCertificateNumber("BIRTH N");
-        p.setRegisterOffice(daoRegister.getOne(1L));
+        p.setChild(c);
 
         return p;
     }
